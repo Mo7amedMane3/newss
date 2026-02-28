@@ -1,64 +1,55 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:newss/core/api_manger.dart';
-import 'package:newss/models/sources_response.dart';
-import 'package:newss/screens/news_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+import 'package:newss/di.dart';
+import 'package:newss/models/categories_model.dart';
+import 'package:newss/screens/bloc/cubit.dart';
+import 'package:newss/screens/views/categories_view.dart';
+import 'package:newss/screens/views/drawer_view.dart';
+import 'package:newss/screens/views/sources_view.dart';
 
+import '../core/theming/cubit/cubit.dart';
 
 class HomeScreen extends StatefulWidget {
-  static const String  routeName='/';
-   HomeScreen({super.key});
+  static const String routeName = "/";
+
+  HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
- int selectedIndex=0;
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        title: Text("News",),
-      ),
-      body: FutureBuilder(
-          future: ApiManger.getSources(),
-          builder: (context,snapshot){
-        if(snapshot.connectionState==ConnectionState.waiting){
-          return Center(child: CircularProgressIndicator(),);
-        }else if(snapshot.hasError){
-          return Center(child: Text("Error"),);
-
-        }
-        List<Sources>sources=snapshot.data?.sources ??[];
-     return Column(
-       children: [
-         DefaultTabController(
-             length: sources.length,
-             initialIndex: selectedIndex,
-             child:TabBar(
-               isScrollable: true,
-               onTap: (index){
-                 selectedIndex=index;
-                 setState(() {
-
-                 });
-               },
-               indicatorColor: Colors.transparent,
-
-               dividerColor: Colors.transparent,
-                 tabAlignment: TabAlignment.start,
-
-                 tabs: sources.map((e) => Tab(child:Text(e.name ?? ""),)).toList()
-             )
-         ),
-         Expanded(child: NewsScreen(sourceId: sources[selectedIndex].id ?? ""))
-       ],
-     );}
+    return LoaderOverlay(
+      child: Scaffold(
+        drawer: DrawerView(onClick: onDrawerClicked),
+        appBar: AppBar(
+          backgroundColor: ThemingCubit.get(context).colors.primary,
+          centerTitle: true,
+          title: Text(
+            selectedCategory == null ? "Home" : selectedCategory!.label,
           ),
+        ),
+
+        body: selectedCategory == null
+            ? CategoriesView(onClick: onClick)
+            : SourcesView(categoryId: selectedCategory!.id),
+      ),
     );
+  }
+
+  CategoriesModel? selectedCategory;
+
+  void onDrawerClicked() {
+    selectedCategory = null;
+    Navigator.pop(context);
+    setState(() {});
+  }
+
+  void onClick(CategoriesModel category) {
+    selectedCategory = category;
+    setState(() {});
   }
 }

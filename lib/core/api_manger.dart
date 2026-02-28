@@ -1,28 +1,54 @@
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
-import '../models/news_response.dart';
-import '../models/sources_response.dart';
 import 'constants.dart';
+import 'my_interceptor.dart' show MyInterceptor;
 
-class ApiManger{
- static Dio dio=Dio();
- static Future<SourcesResponse> getSources()async{
-    Response response=await dio.get(
-        "${AppConstants.BASEURL}v2/top-headlines/sources?apiKey=${AppConstants.APIKEY}"
+@lazySingleton
+class ApiManager {
+  late Dio dio;
+
+  ApiManager() {
+    dio = Dio(
+      BaseOptions(
+        baseUrl: AppConstants.BASEURL,
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+        sendTimeout: const Duration(seconds: 30),
+        headers: {
+          // "x-api-key": AppConstants.APIKEY,
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+      ),
     );
-        SourcesResponse sourcesResponse=SourcesResponse.fromJson(response.data);
-        return sourcesResponse;
 
-
+   dio.interceptors.add(MyInterceptor());
+    dio.interceptors.add(
+      PrettyDioLogger(
+        request: true,
+        requestHeader: true,
+        requestBody: true,
+        responseHeader: false,
+        responseBody: true,
+        error: true,
+      ),
+    );
   }
- static Future<NewsResponse> getNewsData(String sourceId)async{
-   Response response=await dio.get(
-     "${AppConstants.BASEURL}/v2/everything?apiKey=${AppConstants.APIKEY}&sources=$sourceId"
 
-   );
-   NewsResponse newsResponse=NewsResponse.fromJson(response.data);
-   return newsResponse;
-
+  Future<Response> get(
+      String url, {
+        Map<String, dynamic>? queryParameters,
+      }) async {
+    return await dio.get(url, queryParameters: queryParameters);
   }
 
+  Future<Response> post(
+      String url, {
+        dynamic data,
+        Map<String, dynamic>? queryParameters,
+      }) async {
+    return await dio.post(url, data: data, queryParameters: queryParameters);
+  }
 }
