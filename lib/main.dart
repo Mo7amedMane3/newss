@@ -5,6 +5,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:newss/screens/bloc/cubit.dart';
 import 'package:newss/screens/home_screen.dart';
+import 'package:newss/screens/widgets/search_screen.dart';
 
 import 'core/internet_checker.dart';
 import 'core/observer.dart';
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
         initialRoute: HomeScreen.routeName,
         routes: {
           HomeScreen.routeName: (context) => HomeScreen(),
+          SearchScreen.routeName: (context) => const SearchScreen(),
         },
       ),
     );

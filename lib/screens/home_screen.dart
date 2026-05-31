@@ -31,6 +31,18 @@ class _HomeScreenState extends State<HomeScreen> {
           title: Text(
             selectedCategory == null ? "Home" : selectedCategory!.label,
           ),
+
+          actions: [
+            InkWell(
+              onTap: () {
+                Navigator.pushNamed(context, "/search");
+              },
+              child: const Padding(
+                padding: EdgeInsets.all(12.0),
+                child: Icon(Icons.search),
+              ),
+            ),
+          ],
         ),
 
         body: selectedCategory == null
