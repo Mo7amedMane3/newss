@@ -18,7 +18,7 @@ class HomeRepoRemoteImpl extends HomeRemoteRepo {
   Future<NewsResponse> getNews(String sourceId) async {
     try {
       Response response = await apiManager.get(
-        "/v2/everything",
+        "everything",
         queryParameters: {"sources": sourceId},
       );
 
@@ -35,7 +35,7 @@ class HomeRepoRemoteImpl extends HomeRemoteRepo {
   Future<SourcesResponse> getSources(String categoryId) async {
     try {
       Response response = await apiManager.get(
-        "/v2/top-headlines/sources",
+        "top-headlines/sources",
         queryParameters: {"category": categoryId},
       );
 

@@ -24,7 +24,6 @@ class ArticleItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ✅ صورة المقال
           ClipRRect(
             borderRadius: const BorderRadius.vertical(
               top: Radius.circular(16),
